@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnipFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="snipflow-grad" x1="50%" y1="10%" x2="50%" y2="90%">
+                        <stop offset="0%" stop-color="#00FFFF" />
+                        <stop offset="100%" stop-color="#4338CA" />
+                    </linearGradient>
+                </defs>
+
+                <path d="M10 60h80 M10 60v-6 M20 60v-3 M30 60v-3 M40 60v-3 M50 60v-6 M60 60v-3 M70 60v-3 M80 60v-3 M90 60v-6" stroke="#555" stroke-width="2"/>
+                <rect x="10" y="64" width="80" height="3" rx="1.5" fill="#555"/>
+                <rect x="10" y="70" width="80" height="3" rx="1.5" fill="#555"/>
+
+                <path d="M28 60h44 M30 60v-3 M50 60v-3 M50 60v-6 M60 60v-3 M70 60v-3" stroke="#e0e0e0" stroke-width="2"/>
+                <rect x="28" y="64" width="44" height="3" rx="1.5" fill="#e0e0e0"/>
+                <rect x="28" y="70" width="44" height="3" rx="1.5" fill="#e0e0e0"/>
+
+                <polygon points="50,15 56,44 85,50 56,56 50,85 44,56 15,50 44,44" fill="url(#snipflow-grad)"/>
+            </svg>
+            Snipflow
+        </a>
+    </nav>
+
+    <div class="main-container">
+        <h1>Transform Long Videos into Viral Highlights</h1>
+        <p class="subtitle">Instantly transform any video into an engaging highlight or viral reel.</p>
+
+        <div class="card" id="uploadPanel">
+            <div class="drop-zone" id="dropZone">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2z"/>
+                </svg>
+                <h3 id="dropText">Drag & Drop your video here</h3>
+                <p>or click to browse files</p>
+                <input type="file" id="fileInput" class="file-input" accept="video/*">
+            </div>
+            <div id="durationSelector" class="hidden" style="margin-top: 1.5rem; text-align: center;">
+                <label for="reelDuration" style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.95rem;">Target Highlight Duration:</label>
+                <select id="reelDuration" style="padding: 0.6rem 1rem; border-radius: 6px; background: #222; color: #fff; border: 1px solid var(--border-color); font-size: 1rem; width: 100%; max-width: 200px; outline: none; cursor: pointer;">
+                    <option value="15">15 seconds</option>
+                    <option value="20">20 seconds</option>
+                    <option value="30" selected>30 seconds</option>
+                    <option value="45">45 seconds</option>
+                    <option value="60">60 seconds (Max)</option>
+                </select>
+            </div>
+            <div id="collageControls" class="hidden" style="margin-top: 1.5rem; text-align: center;">
+                <div style="display: flex; justify-content: center; gap: 2rem; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="text-align: left;">
+                        <div style="display: flex; align-items: center;">
+                            <input type="range" id="borderGap" min="0" max="150" value="40" style="width: 120px; accent-color: var(--primary-color);">
+                            <span id="gapValue" style="margin-left: 0.7rem; color: #fff; font-variant-numeric: tabular-nums;">40px</span>
+                        </div>
+                    </div>
+                    </div style="text-align: left;">
+    
+                         <input type="color" id="bgColor" value="#f5f5f5" style="width: 60px; height: 35px; border: 1px solid #444; border-radius: 4px; background: #222; color: ;"
+            </div>
+                </svg>
+            </div>
+        </div>
+    </div>
