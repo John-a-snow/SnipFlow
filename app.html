@@ -130,3 +130,121 @@
         const resetBtn = document.getElementById('resetBtn');
         const dropText = document.getElementById('dropText');
         const errorText = document.getElementById('errorText');
+
+        let  selectedFiles = [];
+        let pollInterval = null;
+        let currentJobId = null;
+        let currentJobType = null;
+        let activeTab = 'video';
+
+        const tabVideo = document.getElementById('tabCollage');
+        const tabCollage = document.getElementById('tabCollage');
+        const durationSelector = document.getElementById('durationSelector');
+        const songSection = document.getElementById('songSection');
+        const songInput = document.getElementById('songInput');
+        const songSelectBtn = document.getElementById('songSelectBtn');
+        const songNameDisplay = document.getElementById('songName');
+        const replaceAudioCheckbox = document.getElementById('replaceAudio');
+        
+        const API_BASE = 'http://127.0.0.1.8000';
+
+        songSelectBtn.addEventListener('click', () => songInput.click());
+        songInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                songNameDisplay.innerText = "Selected: " + this.files[0].name;
+                songNameDisplay.classList.remove('hidden');
+            }
+        });
+        
+        async function checkBackend() {
+            try {
+                const res = await fetch(`${API_BASE}/api/status/health-check`).catch(() => ({ ok: false }));
+                if (!res.ok && res.status !== 404) {
+                    showError('Warning: Backend server not detected. Please make sure the FASTAPI server is running.");
+                }
+            } catch (e) {
+                showError("Warning: Backend server not detected. Please make sure the FASTAPI server is running.");            
+                }
+            }
+            checkBackend();
+
+            function showError(msg) {
+                errorText.innerText = msg;
+                errorText.style.display = 'block';
+            }
+
+            tabVideo.addEventListener('click', () => switchTab('video'));
+            tabCollage.addEventListener('click', () => switchTab('collage'));
+
+            function switchTab(tab) {
+                if (activeTab === tab) return;
+                activeTab = tab;
+
+                errorText.style.display = 'none';
+                selectedFiles = [];
+                currentJobId = null;
+                currentJobType = null;
+                fileInput.value = '';
+
+                if (tab === 'video') {
+                    tabVideo.classList.add('active');
+                    tabCollage.classList.remove('active');
+
+                    document.querySelector('h1').innerText = "Transform Long Videos into Viral Highlights";
+                    document.querySelector('.aubtitle').innerText = "Instantly transform any video into an engaging highlight or viral reel.";
+                    dropText.accept = 'video/*';
+                    fileInput.multiple = false;
+                    durationSelector.classList.remove('hidden');
+                    songSection.classList.remove('hidden');
+                    document.getElementById('collageControls').classList.add('hidden');
+                    uploadBtn.innerText = 'Process Highlight';               
+                } else {    
+                    tabCollage.classList.add('active');
+                    tabVideo.classList.remove('active');
+
+                    document.querySelector('h1').innerText = "Create Stunning Photo Collages";
+                    document.querySelector('.subtitle').innerText = "Upload multiple photos and instantly arrange them into a beautiful into a beautiful grid.";
+                    dropText.innerText = 'Drag & Drop up to 20 images here';
+                    fileInput.accept = 'image/*';
+                    fileInput.multiple = true;
+                    durationSelector.classList.add('hidden');
+                    songSection.classList.add('hidden');
+                    document.getElementById('collageControls').classList.remove('hidden');
+                    uploadBtn.innerText = 'Create Collage';
+            }
+            
+            resetUploadUI();
+        }
+
+        document.getElementById('borderGap').addEventListener('input', function() {
+            document.getElementById('gapValue').innerText = this.value + 'px';
+        });
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName => {
+                dropZone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        });
+        
+  
