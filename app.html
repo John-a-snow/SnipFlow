@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SnipFlow</title>
+    <title>Snipflow</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-    <nav>
+    <nav> 
         <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -17,18 +17,18 @@
                         <stop offset="100%" stop-color="#4338CA" />
                     </linearGradient>
                 </defs>
-
+                
                 <path d="M10 60h80 M10 60v-6 M20 60v-3 M30 60v-3 M40 60v-3 M50 60v-6 M60 60v-3 M70 60v-3 M80 60v-3 M90 60v-6" stroke="#555" stroke-width="2"/>
                 <rect x="10" y="64" width="80" height="3" rx="1.5" fill="#555"/>
                 <rect x="10" y="70" width="80" height="3" rx="1.5" fill="#555"/>
-
-                <path d="M28 60h44 M30 60v-3 M50 60v-3 M50 60v-6 M60 60v-3 M70 60v-3" stroke="#e0e0e0" stroke-width="2"/>
+                
+                <path d="M28 60h44 M30 60v-3 M40 60v-3 M50 60v-6 M60 60v-3 M70 60v-3" stroke="#e0e0e0" stroke-width="2"/>
                 <rect x="28" y="64" width="44" height="3" rx="1.5" fill="#e0e0e0"/>
                 <rect x="28" y="70" width="44" height="3" rx="1.5" fill="#e0e0e0"/>
 
                 <polygon points="50,15 56,44 85,50 56,56 50,85 44,56 15,50 44,44" fill="url(#snipflow-grad)"/>
             </svg>
-            Snipflow
+            Snipflow 
         </a>
     </nav>
 
@@ -36,10 +36,15 @@
         <h1>Transform Long Videos into Viral Highlights</h1>
         <p class="subtitle">Instantly transform any video into an engaging highlight or viral reel.</p>
 
+        <div class="tab-container">
+            <button class="tab-btn active" id="tabVideo">Video Highlights</button>
+            <button class="tab-btn" id="tabCollage">Photo Collages</button>
+        </div>
+
         <div class="card" id="uploadPanel">
             <div class="drop-zone" id="dropZone">
                 <svg viewBox="0 0 24 24">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2z"/>
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                 </svg>
                 <h3 id="dropText">Drag & Drop your video here</h3>
                 <p>or click to browse files</p>
@@ -58,13 +63,14 @@
             <div id="collageControls" class="hidden" style="margin-top: 1.5rem; text-align: center;">
                 <div style="display: flex; justify-content: center; gap: 2rem; align-items: flex-end; flex-wrap: wrap;">
                     <div style="text-align: left;">
+                        <label for="borderGap" style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Border Thickness:</label>
                         <div style="display: flex; align-items: center;">
                             <input type="range" id="borderGap" min="0" max="150" value="40" style="width: 120px; accent-color: var(--primary-color);">
                             <span id="gapValue" style="margin-left: 0.7rem; color: #fff; font-variant-numeric: tabular-nums;">40px</span>
                         </div>
                     </div>
-                    </div style="text-align: left;">
-                        <label type="bgColor" style="display: block; margin-bottom: 0.5erem; color: var(--text-secondary); font-size: 0.9rem;">Grid Color</label>
+                    <div style="text-align: left;">
+                        <label for="bgColor" style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Grid Color:</label>
                         <input type="color" id="bgColor" value="#f5f5f5" style="width: 60px; height: 35px; border: 1px solid #444; border-radius: 4px; background: #222; cursor: pointer;">
                     </div>
                 </div>
@@ -76,7 +82,7 @@
             <div id="songSection" class="hidden" style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #333; padding-top: 1.5rem;">
                 <h4 style="margin-bottom: 1rem; color: #fff; font-size: 1rem;">Optional: Background Music</h4>
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-         <button class="btn btn-outline" style="width: 100%; max-width: 300px;" id="songSelectBtn">Choose Song File</button>
+                    <button class="btn btn-outline" style="width: 100%; max-width: 300px;" id="songSelectBtn">Choose Song File</button>
                     <input type="file" id="songInput" accept="audio/*" class="hidden">
                     <div id="songName" style="color: var(--text-secondary); font-size: 0.85rem;" class="hidden"></div>
                     <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
@@ -116,9 +122,10 @@
         </div>
     </div>
 
+    
     <script>
         const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('filrInput');
+        const fileInput = document.getElementById('fileInput');
         const uploadBtn = document.getElementById('uploadBtn');
         const progressContainer = document.getElementById('progressContainer');
         const statusText = document.getElementById('statusText');
@@ -131,13 +138,13 @@
         const dropText = document.getElementById('dropText');
         const errorText = document.getElementById('errorText');
 
-        let  selectedFiles = [];
+        let selectedFiles = [];
         let pollInterval = null;
         let currentJobId = null;
         let currentJobType = null;
         let activeTab = 'video';
-
-        const tabVideo = document.getElementById('tabCollage');
+        
+        const tabVideo = document.getElementById('tabVideo');
         const tabCollage = document.getElementById('tabCollage');
         const durationSelector = document.getElementById('durationSelector');
         const songSection = document.getElementById('songSection');
@@ -145,8 +152,8 @@
         const songSelectBtn = document.getElementById('songSelectBtn');
         const songNameDisplay = document.getElementById('songName');
         const replaceAudioCheckbox = document.getElementById('replaceAudio');
-        
-        const API_BASE = 'http://127.0.0.1.8000';
+
+        const API_BASE = 'http://127.0.0.1:8000';
 
         songSelectBtn.addEventListener('click', () => songInput.click());
         songInput.addEventListener('change', function() {
@@ -155,62 +162,63 @@
                 songNameDisplay.classList.remove('hidden');
             }
         });
-        
+
         async function checkBackend() {
             try {
                 const res = await fetch(`${API_BASE}/api/status/health-check`).catch(() => ({ ok: false }));
-                if (!res.ok && res.status !== 404) {
-                    showError('Warning: Backend server not detected. Please make sure the FASTAPI server is running.");
+                if (!res.ok && res.status !== 404) { 
+                    showError("Warning: Backend server not detected. Please make sure the FastAPI server is running.");
                 }
             } catch (e) {
-                showError("Warning: Backend server not detected. Please make sure the FASTAPI server is running.");            
-                }
+                showError("Warning: Backend server not detected. Please make sure the FastAPI server is running.");
             }
-            checkBackend();
+        }
+        checkBackend();
 
-            function showError(msg) {
-                errorText.innerText = msg;
-                errorText.style.display = 'block';
-            }
+        function showError(msg) {
+            errorText.innerText = msg;
+            errorText.style.display = 'block';
+        }
 
-            tabVideo.addEventListener('click', () => switchTab('video'));
-            tabCollage.addEventListener('click', () => switchTab('collage'));
+        tabVideo.addEventListener('click', () => switchTab('video'));
+        tabCollage.addEventListener('click', () => switchTab('collage'));
 
-            function switchTab(tab) {
-                if (activeTab === tab) return;
-                activeTab = tab;
+        function switchTab(tab) {
+            if (activeTab === tab) return;
+            activeTab = tab;
+            
+            errorText.style.display = 'none';
+            selectedFiles = [];
+            currentJobId = null;
+            currentJobType = null;
+            fileInput.value = '';
 
-                errorText.style.display = 'none';
-                selectedFiles = [];
-                currentJobId = null;
-                currentJobType = null;
-                fileInput.value = '';
-
-                if (tab === 'video') {
-                    tabVideo.classList.add('active');
-                    tabCollage.classList.remove('active');
-
-                    document.querySelector('h1').innerText = "Transform Long Videos into Viral Highlights";
-                    document.querySelector('.aubtitle').innerText = "Instantly transform any video into an engaging highlight or viral reel.";
-                    dropText.accept = 'video/*';
-                    fileInput.multiple = false;
-                    durationSelector.classList.remove('hidden');
-                    songSection.classList.remove('hidden');
-                    document.getElementById('collageControls').classList.add('hidden');
-                    uploadBtn.innerText = 'Process Highlight';               
-                } else {    
-                    tabCollage.classList.add('active');
-                    tabVideo.classList.remove('active');
-
-                    document.querySelector('h1').innerText = "Create Stunning Photo Collages";
-                    document.querySelector('.subtitle').innerText = "Upload multiple photos and instantly arrange them into a beautiful into a beautiful grid.";
-                    dropText.innerText = 'Drag & Drop up to 20 images here';
-                    fileInput.accept = 'image/*';
-                    fileInput.multiple = true;
-                    durationSelector.classList.add('hidden');
-                    songSection.classList.add('hidden');
-                    document.getElementById('collageControls').classList.remove('hidden');
-                    uploadBtn.innerText = 'Create Collage';
+            if (tab === 'video') {
+                tabVideo.classList.add('active');
+                tabCollage.classList.remove('active');
+                
+                document.querySelector('h1').innerText = "Transform Long Videos into Viral Highlights";
+                document.querySelector('.subtitle').innerText = "Instantly transform any video into an engaging highlight or viral reel.";
+                dropText.innerText = 'Drag & Drop your video here';
+                fileInput.accept = 'video/*';
+                fileInput.multiple = false;
+                durationSelector.classList.remove('hidden');
+                songSection.classList.remove('hidden');
+                document.getElementById('collageControls').classList.add('hidden');
+                uploadBtn.innerText = 'Process Highlight';
+            } else {
+                tabCollage.classList.add('active');
+                tabVideo.classList.remove('active');
+                
+                document.querySelector('h1').innerText = "Create Stunning Photo Collages";
+                document.querySelector('.subtitle').innerText = "Upload multiple photos and instantly arrange them into a beautiful grid.";
+                dropText.innerText = 'Drag & Drop up to 20 images here';
+                fileInput.accept = 'image/*';
+                fileInput.multiple = true;
+                durationSelector.classList.add('hidden');
+                songSection.classList.add('hidden');
+                document.getElementById('collageControls').classList.remove('hidden');
+                uploadBtn.innerText = 'Create Collage';
             }
             
             resetUploadUI();
@@ -236,7 +244,7 @@
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName => {
+            dropZone.addEventListener(eventName, () => {
                 dropZone.classList.remove('dragover');
             }, false);
         });
@@ -246,5 +254,96 @@
             const files = dt.files;
             handleFiles(files);
         });
-        
-  
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length === 'video') {
+
+            if(activeTab === files[0];
+            const file = files[0];
+            if(file.type.startsWith('video/') || file.name.match(/\.(mp4|mov|avi|mkv|webm|ts|m4v)$/i)) {
+                selectedFiles = [file];
+                dropText.innerText = file.name;
+                uploadBtn.classList.add('hidden');
+                errorText.style.display = 'none';
+                startUpload(selectedFiles);
+            } else {
+                showError('Please select a valid video file.');
+            }
+        } else if (activeTab === 'collage') {
+            const isAllImages = Array.from(files).every(f => {
+                if (f.type.match(/\.(jpg|jpeg|png|heic|webp|bmp|gif|tiff)$/i)) return true;
+                    return false;
+                });
+                if (isAllImages) {
+                    selectedFiles = Array.from(files);
+                    dropText.innerText = `${files.length} images selected`;
+                    uploadBtn.classList.add('hidden');
+                    errorText.style.display = 'none';
+                    startUpload(selectedFiles);
+                } else {
+                    showError('Please select only image files.');
+                }
+            }
+        }
+
+        function startUpload(files_arr) {
+            errorText.style.display = 'none';
+            uploadBtn.classList.add('hidden');
+            progressContainer.classList.remove('hidden');
+            statusText.innerText = 'Initializing upload...';
+
+            const circularFill = document.getElementById('circularFill');
+            const progressPercentage = document.getElementById('progressPercentage');
+            const circularProgress = document.getElementById('circularProgress');
+            const aiLoader = document.getElementById('hidden');
+
+            const formData = new FormData();
+            files_arr.forEach(f => formData.append('files', f));
+
+            if (activeTab === 'video' && songInput.files[0]) {
+                formData.append('files', songInput.files[0]);
+            }
+
+            console.log("Starting upload with progress tracking...");
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    const offset = 283 - (283 * percentComplete) / 100;
+                    circularFill.style.strokeDashoffset = offset;
+                    progressPercentage.innerText = percentComplete + '%';
+                    statusText.innerText = `Uploading files... (${percentComplete}%)`;
+                    console.log(`Upload progress: ${percentComplete}%`);
+                }
+            });              
+
+            xhr.addEventListener('load', () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        currentJobId = data.job_id;
+                        currentJobType = data.job_type;
+    
+                        statusText.innerText = 'Upload complete! Ready to process.';
+                        if (currentJobType === 'video') {
+                            document.getElementById('durationSelector').classList.remove('hidden');
+                            uploadBtn.innerText = 'Process Highlight';
+                        } else {
+                            uploadBtn.innerText = 'Create Collage';
+                        }
+                        uploadBtn.classList.remove('hidden');
+                        uploadBtn.disabled = false;
+                        
+                    } catch (e) {
+                        showError('Error parsing server response.');
+                    }
