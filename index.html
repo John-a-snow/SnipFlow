@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SnipFlow - Automated Video Highlights</title>
+    <title>Snipflow - Automated Video Highlights</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -31,3 +31,99 @@
                 <polygon points="50,15 56,44 85,50 56,56 50,85 44,56 15,50 44,44" fill="url(#snipflow-grad)"/>
             </svg>
             Snipflow
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="how-it-works.html">How it works</a>
+            <a href="app.html" class="nav-cta">Open App</a>
+        </div>
+    </nav>
+
+    <div class="hero-container">
+        
+        <h1 class="animate delay-1">Turn Long Videos Into Viral Highlights & Photos Into Collages.</h1>
+        <p class="animate delay-2">Instantly transform any video into an engaging highlight, or build stunning collages from your photos. Just drop your content in, and let Snipflow do the rest.</p>
+        
+        <div class="cta-group animate delay-3">
+            <a href="app.html" class="btn-primary">
+                Launch Snipflow
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#features" class="btn-secondary">Explore Features</a>
+        </div>
+    </div>
+
+    <section class="features" id="features">
+        <div class="features-grid">
+            <div class="feature-card animate delay-2">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 3v18M8 8v8M4 11v2M16 7v10M20 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>Audio Energy Mapping</h3>
+                <p>Finds the loudest and most exciting moments in your video so you never miss the best reactions or high-energy clips.</p>
+            </div>
+            
+            <div class="feature-card animate delay-3">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Automated Word Detection</h3>
+                <p>Listens to the dialogue and grabs the parts where people say important phrases like "highlight," "key takeaway," or anything crucial.</p>
+            </div>
+            
+            <div class="feature-card animate delay-4">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Smooth Scene Cuts</h3>
+                <p>Automatically makes sure your clips start and end at the right visual moments, so you don't get awkward, jarring cuts.</p>
+            </div>
+            
+            <div class="feature-card animate delay-5">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Automated Photo Collages</h3>
+                <p>Upload a batch of photos and Snipflow will automatically arrange them into a stunning, perfectly sized collage grid.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <footer>
+        <div>&copy; 2026 Snipflow. All rights reserved.</div>
+        <div style="display: flex; gap: 1.5rem;">
+            <a href="#" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+            <a href="#" style="color: inherit; text-decoration: none;">Terms of Service</a>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const launchBtn = document.querySelector('.btn-primary');
+            
+            if (launchBtn) {
+                launchBtn.addEventListener('click', (e) => {
+
+                    if (launchBtn.getAttribute('href') === 'app.html') {
+                        e.preventDefault();
+                        
+                        document.body.classList.add('page-transitioning');
+                        
+                        setTimeout(() => {
+                            window.location.href = launchBtn.getAttribute('href');
+                        }, 450);
+                    }
+                });
+            }
+        });
+    </script>
