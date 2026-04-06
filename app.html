@@ -264,22 +264,23 @@
         });
 
         function handleFiles(files) {
-            if (files.length === 'video') {
-
-            if(activeTab === files[0];
-            const file = files[0];
-            if(file.type.startsWith('video/') || file.name.match(/\.(mp4|mov|avi|mkv|webm|ts|m4v)$/i)) {
-                selectedFiles = [file];
-                dropText.innerText = file.name;
-                uploadBtn.classList.add('hidden');
-                errorText.style.display = 'none';
-                startUpload(selectedFiles);
-            } else {
-                showError('Please select a valid video file.');
-            }
-        } else if (activeTab === 'collage') {
-            const isAllImages = Array.from(files).every(f => {
-                if (f.type.match(/\.(jpg|jpeg|png|heic|webp|bmp|gif|tiff)$/i)) return true;
+            if (files.length === 0) return;
+            
+            if (activeTab === 'video') {
+                const file = files[0];
+                if (file.type.startsWith('video/') || file.name.match(/\.(mp4|mov|avi|mkv|webm|ts|m4v)$/i)) {
+                    selectedFiles = [file];
+                    dropText.innerText = file.name;
+                    uploadBtn.classList.add('hidden');
+                    errorText.style.display = 'none';
+                    startUpload(selectedFiles);
+                } else {
+                    showError('Please select a valid video file.');
+                }
+            } else if (activeTab === 'collage') {
+                const isAllImages = Array.from(files).every(f => {
+                    if (f.type.startsWith('image/')) return true;
+                    if (f.name.match(/\.(jpg|jpeg|png|heic|webp|bmp|gif|tiff)$/i)) return true;
                     return false;
                 });
                 if (isAllImages) {
@@ -297,25 +298,31 @@
         function startUpload(files_arr) {
             errorText.style.display = 'none';
             uploadBtn.classList.add('hidden');
+            dropZone.classList.add('hidden');
             progressContainer.classList.remove('hidden');
             statusText.innerText = 'Initializing upload...';
 
             const circularFill = document.getElementById('circularFill');
             const progressPercentage = document.getElementById('progressPercentage');
             const circularProgress = document.getElementById('circularProgress');
-            const aiLoader = document.getElementById('hidden');
+            const aiLoader = document.getElementById('aiLoader');
+            
+            circularFill.style.strokeDashoffset = '283';
+            progressPercentage.innerText = '0%';
+            circularProgress.classList.remove('hidden');
+            aiLoader.classList.add('hidden');
 
             const formData = new FormData();
             files_arr.forEach(f => formData.append('files', f));
-
+            
             if (activeTab === 'video' && songInput.files[0]) {
                 formData.append('files', songInput.files[0]);
             }
 
             console.log("Starting upload with progress tracking...");
-
+            
             const xhr = new XMLHttpRequest();
-
+            
             xhr.upload.addEventListener('progress', (e) => {
                 if (e.lengthComputable) {
                     const percentComplete = Math.round((e.loaded / e.total) * 100);
@@ -325,7 +332,7 @@
                     statusText.innerText = `Uploading files... (${percentComplete}%)`;
                     console.log(`Upload progress: ${percentComplete}%`);
                 }
-            });              
+            });
 
             xhr.addEventListener('load', () => {
                 if (xhr.status >= 200 && xhr.status < 300) {
@@ -333,7 +340,7 @@
                         const data = JSON.parse(xhr.responseText);
                         currentJobId = data.job_id;
                         currentJobType = data.job_type;
-    
+                        
                         statusText.innerText = 'Upload complete! Ready to process.';
                         if (currentJobType === 'video') {
                             document.getElementById('durationSelector').classList.remove('hidden');
@@ -347,3 +354,135 @@
                     } catch (e) {
                         showError('Error parsing server response.');
                     }
+                } else {
+                    let errorMessage = 'Upload failed';
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        errorMessage = data.detail || errorMessage;
+                    } catch (e) {}
+                    showError('Error: ' + errorMessage);
+                    resetUploadUI();
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                showError('Network error occurred during upload. Is the FastAPI backend running?');
+                resetUploadUI();
+            });
+
+            xhr.open('POST', `${API_BASE}/api/upload`);
+            xhr.send(formData);
+        }
+
+        uploadBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!currentJobId) {
+                showError("Error: currentJobId is null. Did the upload finish?");
+                return;
+            }
+
+            errorText.style.display = 'none';
+            uploadBtn.classList.add('hidden');
+            document.getElementById('durationSelector').classList.add('hidden');
+            
+            const circularProgress = document.getElementById('circularProgress');
+            const aiLoader = document.getElementById('aiLoader');
+            
+            circularProgress.classList.add('hidden');
+            aiLoader.classList.remove('hidden');
+            
+            if (currentJobType === 'video') {
+                statusText.innerText = 'Starting Audio Analysis...';
+            } else {
+                statusText.innerText = 'Creating Collage...';
+            }
+            
+            const duration = document.getElementById('reelDuration').value;
+            const gap = document.getElementById('borderGap').value;
+            const bgColor = encodeURIComponent(document.getElementById('bgColor').value);
+            const title = encodeURIComponent(document.getElementById('collageTitle').value);
+            const replaceAudio = document.getElementById('replaceAudio').checked;
+            
+            try {
+                const url = currentJobType === 'video' 
+                    ? `${API_BASE}/api/process/${currentJobId}?duration=${duration}&replace_audio=${replaceAudio}`
+                    : `${API_BASE}/api/process/${currentJobId}?gap=${gap}&bg_color=${bgColor}&title=${title}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    if (currentJobType === 'video') {
+                        statusText.innerText = 'Analysis in progress... (Step 1/6: Extracting Audio)';
+                    } else {
+                        statusText.innerText = 'Processing images into a collage grid...';
+                    }
+                    startPolling(currentJobId);
+                } else {
+                    const data = await response.json();
+                    showError('Failed to start processing: ' + (data.detail || 'Unknown error'));
+                    uploadBtn.classList.remove('hidden');
+                }
+            } catch (err) {
+                showError('JavaScript/Network Error: ' + err.message);
+                console.error("Fetch Exception:", err);
+                uploadBtn.classList.remove('hidden');
+            }
+        });
+
+        function resetUploadUI() {
+            if (activeTab === 'video') {
+                document.getElementById('durationSelector').classList.remove('hidden');
+            } else {
+                document.getElementById('durationSelector').classList.add('hidden');
+            }
+            uploadBtn.classList.remove('hidden');
+            dropZone.classList.remove('hidden');
+            progressContainer.classList.add('hidden');
+            resultPanel.classList.add('hidden');
+            uploadBtn.classList.remove('hidden');
+            uploadBtn.disabled = true;
+            resultVideo.src = '';
+            resultImage.src = '';
+        }
+
+        function startPolling(jobId) {
+            let lastStatus = '';
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/api/status/${jobId}`);
+                    if (!response.ok) return;
+                    
+                    const data = await response.json();
+                    
+                    if (data.status === 'completed') {
+                        clearInterval(pollInterval);
+                        statusText.innerText = 'Finalizing...';
+                        console.log("Job completed!");
+                        showResult(jobId);
+                    } else if (data.status === 'failed') {
+                        clearInterval(pollInterval);
+                        showError('Backend Processing failed: ' + data.error);
+                        statusText.innerText = 'Processing halted due to error.';
+                        statusText.style.color = '#ff4444';
+                        document.getElementById('aiLoader').classList.add('hidden');
+                        uploadBtn.classList.remove('hidden');
+                        uploadBtn.innerText = 'Retry Processing';
+                        uploadBtn.disabled = false;
+                    } else if (data.status === 'processing') {
+                        if (statusText.innerText === 'Analysis in progress... (Step 1/6: Extracting Audio)') {
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('polling error:', error);
+                }
+            }, 2000);
+        }
+
+        function showResult(jobId) {
+            uploadPanel.classList.remove('hidden');
+            resultPanel.classList.remove('hidden');
+
+            const fileUrl = `${API}
+                   
