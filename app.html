@@ -484,5 +484,18 @@
             uploadPanel.classList.remove('hidden');
             resultPanel.classList.remove('hidden');
 
-            const fileUrl = `${API}
+            const fileUrl = `${API_BASE}/api/download/${jobId}`;
+            downloadLink.href = fileUrl;
+
+            if (currentJobType === 'video') {
+                document.querySelector('#resultPanel h3').innerText = 'Your Highlight Reel is Ready';
+                resultVideo.style.display = 'block';
+            resultImage.style.display = 'none';
+                resultVideo.src = fileUrl + "?view=1";
+                downloadLink.href = fileUrl + "?download=1";
+                downloadLink.download = `highlight_${jobId}.mp4`;
+                resultVideo.load();
+                resultVideo.play().catch(e => console.log("Auto-play prevented"));
+            } else {
+                document.
                    
