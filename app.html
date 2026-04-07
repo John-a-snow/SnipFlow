@@ -440,7 +440,7 @@
             dropZone.classList.remove('hidden');
             progressContainer.classList.add('hidden');
             resultPanel.classList.add('hidden');
-            uploadBtn.classList.remove('hidden');
+            uploadPanel.classList.remove('hidden');
             uploadBtn.disabled = true;
             resultVideo.src = '';
             resultImage.src = '';
@@ -475,27 +475,55 @@
                     }
 
                 } catch (error) {
-                    console.error('polling error:', error);
+                    console.error('Polling error:', error);
                 }
             }, 2000);
         }
 
         function showResult(jobId) {
-            uploadPanel.classList.remove('hidden');
+            uploadPanel.classList.add('hidden');
             resultPanel.classList.remove('hidden');
-
+            
             const fileUrl = `${API_BASE}/api/download/${jobId}`;
             downloadLink.href = fileUrl;
-
+            
             if (currentJobType === 'video') {
                 document.querySelector('#resultPanel h3').innerText = 'Your Highlight Reel is Ready';
                 resultVideo.style.display = 'block';
-            resultImage.style.display = 'none';
+                resultImage.style.display = 'none';
                 resultVideo.src = fileUrl + "?view=1";
                 downloadLink.href = fileUrl + "?download=1";
                 downloadLink.download = `highlight_${jobId}.mp4`;
                 resultVideo.load();
                 resultVideo.play().catch(e => console.log("Auto-play prevented"));
             } else {
-                document.
-                   
+                document.querySelector('#resultPanel h3').innerText = 'Your Collage is Ready';
+                resultVideo.style.display = 'none';
+                resultImage.style.display = 'block';
+                resultImage.src = fileUrl + "?view=1";
+                downloadLink.href = fileUrl + "?download=1";
+                downloadLink.download = `collage_${jobId}.png`;
+            }
+        }
+
+        resetBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            currentJobId = null;
+            currentJobType = null;
+            fileInput.value = '';
+            
+            if (activeTab === 'video') {
+                dropText.innerText = 'Drag & Drop your video here';
+                uploadBtn.innerText = 'Process Highlight';
+            } else {
+                dropText.innerText = 'Drag & Drop up to 20 images here';
+                uploadBtn.innerText = 'Create Collage';
+            }
+            
+            errorText.style.display = 'none';
+            resetUploadUI();
+        });
+
+    </script>
+</body>
+</html>
