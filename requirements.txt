@@ -3,8 +3,9 @@ uvicorn
 python-multipart
 moviepy<2.0.0
 openai-whisper
-opencv-python
+opencv-python-headless
 numpy
 librosa
 pydantic
 Pillow
+pillow-heif
