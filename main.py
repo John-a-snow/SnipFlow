@@ -88,7 +88,7 @@ def background_collage_processor(job_id: str, input_paths: list[str], output_pat
             print(f"Collage Job {job_id} completed successfully.")
         else:
             raise Exception("Collage was not generated.")
-    
+            
     except Exception as e:
         import traceback
         error_msg = str(e)
@@ -103,4 +103,126 @@ def background_collage_processor(job_id: str, input_paths: list[str], output_pat
                     os.remove(path)
                 except:
                     pass
+
+@app.post("/api/upload")
+async def upload_video(files: list[UploadFile] = File(...)):
+    job_id = str(uuid.uuid4())
+    
+    video_file = None
+    audio_file = None
+    image_files = []
+    
+    for f in files:
+        _, ext = os.path.splitext(f.filename.lower())
+        if ext in ['.mp4', '.mov', '.avi', '.mkv', '.webm']:
+            video_file = f
+        elif ext in ['.mp3', '.wav', '.m4a', '.aac', '.ogg']:
+            audio_file = f
+        elif ext in ['.jpg', '.jpeg', '.png', '.webp', '.heic']:
+            image_files.append(f)
+
+    if video_file is not None:
+        v_file: UploadFile = video_file
+        video_filename = v_file.filename or "video.mp4"
+        _, ext = os.path.splitext(video_filename)
+        input_path = f"data/inputs/{job_id}{ext}"
+        output_path = f"data/outputs/{job_id}_highlight.mp4"
+        
+        try:
+            with open(input_path, "wb") as buffer:
+                shutil.copyfileobj(v_file.file, buffer)
             
+            song_path = None
+            if audio_file is not None:
+                a_file: UploadFile = audio_file
+                audio_filename = a_file.filename or "song.mp3"
+                _, aext = os.path.splitext(audio_filename)
+                song_path = f"data/inputs/{job_id}_song{aext}"
+                with open(song_path, "wb") as buffer:
+                    shutil.copyfileobj(a_file.file, buffer)
+                
+            jobs[job_id] = {
+                "status": "uploaded", 
+                "job_type": "video",
+                "output": None, 
+                "error": None, 
+                "input_path": input_path, 
+                "output_path": output_path,
+                "song_path": song_path
+            }
+            return JSONResponse(status_code=202, content={"job_id": job_id, "job_type": "video"})
+        except Exception as e:
+            return JSONResponse(status_code=500, content={"detail": f"Upload failed: {str(e)}"})
+            
+    elif len(image_files) > 0:
+        saved_paths = []
+        for i, f in enumerate(image_files):
+            _, ext = os.path.splitext(f.filename)
+            if not ext: ext = ".png"
+            p = f"data/inputs/{job_id}_{i}{ext}"
+            saved_paths.append(p)
+            with open(p, "wb") as buffer:
+                shutil.copyfileobj(f.file, buffer)
+        
+        output_path = f"data/outputs/{job_id}_collage.png"
+        jobs[job_id] = {
+            "status": "uploaded",
+            "job_type": "collage",
+            "output": None,
+            "error": None,
+            "input_paths": saved_paths,
+            "output_path": output_path
+        }
+        return JSONResponse(status_code=202, content={"job_id": job_id, "job_type": "collage"})
+    else:
+        return JSONResponse(status_code=400, content={"detail": "No valid video or image files uploaded"})
+
+@app.post("/api/process/{job_id}")
+async def process_job(background_tasks: BackgroundTasks, job_id: str, duration: float = 30.0, bg_color: str = "#f5f5f5", gap: int = 40, title: str = "", replace_audio: bool = False):
+    if job_id not in jobs:
+        return JSONResponse(status_code=404, content={"detail": "Job not found"})
+        
+    job = jobs[job_id]
+    if job["status"] != "uploaded":
+        return JSONResponse(status_code=400, content={"detail": "Job not ready for processing"})
+        
+    job["status"] = "pending"
+    
+    if job.get("job_type") == "collage":
+        background_tasks.add_task(background_collage_processor, job_id, job["input_paths"], job["output_path"], bg_color, gap, title)
+    else:
+        background_tasks.add_task(background_processor, job_id, job["input_path"], job["output_path"], duration, job.get("song_path"), replace_audio)
+    
+    return JSONResponse(status_code=202, content={"status": "processing started"})
+
+@app.get("/api/status/{job_id}")
+def get_status(job_id: str):
+    if job_id not in jobs:
+        return JSONResponse(status_code=404, content={"detail": "Job not found"})
+    return jobs[job_id]
+
+from fastapi.staticfiles import StaticFiles
+
+@app.get("/api/download/{job_id}")
+def download_video(job_id: str):
+    if job_id not in jobs:
+        return JSONResponse(status_code=404, content={"detail": "Job not found"})
+        
+    job = jobs[job_id]
+    if job["status"] != "completed":
+        return JSONResponse(status_code=400, content={"detail": "Job not completed yet"})
+        
+    if not os.path.exists(job["output"]):
+        return JSONResponse(status_code=404, content={"detail": "Output file not found on disk"})
+
+    media_type = "video/mp4" if job.get("job_type", "video") == "video" else "image/png"
+    filename = f"highlight_{job_id}.mp4" if media_type == "video/mp4" else f"collage_{job_id}.png"
+
+    return FileResponse(
+        path=job["output"], 
+        media_type=media_type, 
+        filename=filename
+    )
+
+app.mount("/", StaticFiles(directory=os.path.dirname(os.path.abspath(__file__)), html=True), name="static")
+
