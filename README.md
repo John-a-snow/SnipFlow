@@ -1,39 +1,76 @@
-# Snipflow
+<h1 align="center">
+  <br>
+  🎬
+  <br>
+  Snipflow
+</h1>
+
+<p align="center">
+  a smart web application that automatically transforms long videos into short highlight clips and creates beautiful photo collages without the need for manual editing.
+</p>
 
 **Live Demo:** [https://snipflow-crtr.onrender.com](https://snipflow-crtr.onrender.com)
 
-Snipflow is a web application that takes long videos and automatically edits them down into short highlight reels. It also includes a secondary tool for creating photo grid collages (with native support for iPhone HEIC files).
+---
 
-I built this to experiment with audio analysis, OpenCV, and local AI transcription. Instead of manually scrubbing through long footage to find interesting parts, the backend analyzes the video, looks for loud audio spikes or specific keywords, and stitches the best segments together automatically.
+### Features
 
-## How it Works
+- **Automated Video Editing:**
+  - **Audio Energy Detection:** Automatically identifies the loudest, most exciting moments in your video.
+  - **AI Transcription:** Uses OpenAI's Whisper to understand speech and locate key phrases.
+  - **Smart Scene Cuts:** Analyzes camera transitions so your clips never cut abruptly in the middle of an action sequence.
+  
+- **Photo Collage Generator:**
+  - **Grid Layout:** Seamlessly stitch multiple photos into a clean, modern grid.
+  - **iPhone Photo Support:** Native support for `.HEIC` formats straight from your phone.
+  - **Customization:** Add custom background colors, adjust spacing gaps, and apply custom text watermarks.
 
-The backend is built with FastAPI and processes videos through a pipeline:
-1. **Audio Extraction:** Rips the audio track from the uploaded video.
-2. **Energy Detection:** Uses `librosa` to find peaks in volume (loud moments, cheering, etc).
-3. **Transcription:** Runs the audio through OpenAI's `Whisper` AI (tiny model) to generate text and find keywords.
-4. **Scene Detection:** Uses OpenCV frame differencing to find where the camera cuts are, ensuring the highlight doesn't slice directly through an action shot.
-5. **Scoring:** Ranks chunks of the video based on the audio energy and text data.
-6. **Rendering:** Stitches the highest-scoring chunks together, applies cinematic camera zooms, handles audio ducking for background music, and exports the final MP4 using MoviePy.
+- **Dynamic UI:**
+  - **Drag-and-Drop Interface:** Easily upload media with a beautifully designed, distraction-free UI.
+  - **Real-Time Progress Tracking:** Watch the backend process your video step-by-step directly from the web browser window.
 
-## Tech Stack
+### Technologies Used
 
 - **Backend:** Python, FastAPI, Uvicorn
-- **Processing:** OpenCV, MoviePy, Librosa, Pillow
-- **AI:** OpenAI Whisper (running locally)
-- **Frontend:** Vanilla HTML, CSS, and Javascript
+- **AI & Media Engine:** OpenCV, Librosa, MoviePy, OpenAI Whisper
+- **Image Processing:** Pillow, Pillow-HEIF
+- **Frontend:** HTML5, Vanilla CSS, Vanilla JavaScript
 
-## Running it Locally
+### Local Setup and Installation
 
-If you want to run this natively on your own machine:
+Follow these steps to get the application running on your local machine.
 
-1. Clone the repository.
-2. Install the dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Start the API server:
-   ```bash
-   uvicorn main:app --reload
-   ```
-4. Simply open `index.html` or `app.html` in your web browser. The frontend will communicate directly with `localhost:8000`.
+#### 1. Prerequisites
+- Python 3.9+
+- FFmpeg installed on your system path (optional but highly recommended for fast video rendering).
+
+#### 2. Clone the Repository
+Clone this repository to your local machine:
+
+```bash
+git clone https://github.com/yourusername/Snipflow.git
+cd Snipflow
+```
+
+#### 3. Install Dependencies
+Create a virtual environment (optional but highly recommended) and install all required Python packages:
+
+```bash
+python -m venv venv
+
+venv\Scripts\activate
+
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+#### 4. Run the Server
+Start the FastAPI backend server:
+
+```bash
+uvicorn main:app --reload
+```
+
+#### 5. Open the Application
+You do not need a complex frontend framework! Simply double-click and open `index.html` or `app.html` directly in your web browser and start uploading.
