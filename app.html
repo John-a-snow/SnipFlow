@@ -153,7 +153,7 @@
         const songNameDisplay = document.getElementById('songName');
         const replaceAudioCheckbox = document.getElementById('replaceAudio');
 
-        const API_BASE = 'http://127.0.0.1:8000';
+        const API_BASE = window.location.origin;
 
         songSelectBtn.addEventListener('click', () => songInput.click());
         songInput.addEventListener('change', function() {
