@@ -470,7 +470,8 @@
                         uploadBtn.innerText = 'Retry Processing';
                         uploadBtn.disabled = false;
                     } else if (data.status === 'processing') {
-                        if (statusText.innerText === 'Analysis in progress... (Step 1/6: Extracting Audio)') {
+                        if (data.progress_msg) {
+                            statusText.innerText = 'Analysis in progress... (' + data.progress_msg + ')';
                         }
                     }
 
